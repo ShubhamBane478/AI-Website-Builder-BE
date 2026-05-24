@@ -2,5 +2,20 @@ spring:
   application:
     name: aiwebsitebuilder
 
+  datasource:
+    url: ${DB_URL:jdbc:postgresql://localhost:5432/siteforge_dev?TimeZone=UTC}
+    username: ${DB_USERNAME:siteforge}
+    password: ${DB_PASSWORD:localpassword}
+
+  jpa:
+    hibernate:
+      ddl-auto: update
+    show-sql: true
+    properties:
+      hibernate:
+        format_sql: true
+        jdbc:
+          time_zone: UTC
+
 cors:
   allowed-origins: ${CORS_ALLOWED_ORIGINS:http://localhost:3000,http://localhost:5173}
