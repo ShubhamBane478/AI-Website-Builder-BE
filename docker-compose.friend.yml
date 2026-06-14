@@ -1,0 +1,53 @@
+# ─────────────────────────────────────────────────────────────────────────────
+# docker-compose.friend.yml
+#
+# FOR FRONTEND DEVELOPERS — no backend source code required.
+#
+# This file spins up both the PostgreSQL database and the pre-built backend
+# API using the published Docker Hub image. You do not need Java, Maven, or
+# the backend source code installed on your machine.
+#
+# Prerequisites: Docker Desktop (https://www.docker.com/products/docker-desktop)
+#
+# Quick start:
+#   1. Copy .env.example to .env and fill in any values you want to change
+#   2. docker compose -f docker-compose.friend.yml up -d
+#   3. API is available at http://localhost:8080
+# ─────────────────────────────────────────────────────────────────────────────
+
+services:
+  postgres:
+    image: postgres:15
+    container_name: siteforge_db
+    env_file:
+      - .env
+    environment:
+      POSTGRES_DB: ${DB_NAME}
+      POSTGRES_USER: ${DB_USERNAME}
+      POSTGRES_PASSWORD: ${DB_PASSWORD}
+    ports:
+      - "5432:5432"
+    volumes:
+      - siteforge_data:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U ${DB_USERNAME} -d ${DB_NAME}"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+  backend:
+    image: shubhambane478/siteforge-backend:latest
+    container_name: siteforge_backend
+    ports:
+      - "8080:8080"
+    env_file:
+      - .env
+    environment:
+      # Backend reaches postgres via Docker network, not localhost
+      DB_URL: jdbc:postgresql://postgres:5432/${DB_NAME}?TimeZone=UTC
+    depends_on:
+      postgres:
+        condition: service_healthy
+
+volumes:
+  siteforge_data:

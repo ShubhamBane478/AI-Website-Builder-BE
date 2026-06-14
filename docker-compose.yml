@@ -18,5 +18,19 @@ services:
       timeout: 5s
       retries: 5
 
+  backend:
+    image: shubhambane478/siteforge-backend:latest
+    container_name: siteforge_backend
+    ports:
+      - "8080:8080"
+    env_file:
+      - .env
+    environment:
+      # Override DB_URL so the backend reaches postgres via Docker network (not localhost)
+      DB_URL: jdbc:postgresql://postgres:5432/${DB_NAME}?TimeZone=UTC
+    depends_on:
+      postgres:
+        condition: service_healthy
+
 volumes:
   siteforge_data:
