@@ -1,0 +1,17 @@
+services:
+  backend:
+    image: YOUR_DOCKERHUB_USERNAME/siteforge-backend:latest
+    container_name: siteforge_backend
+    ports:
+      - "8080:8080"
+    env_file:
+      - .env.uat
+    environment:
+      SPRING_PROFILES_ACTIVE: uat
+    restart: unless-stopped
+    healthcheck:
+      test: ["CMD-SHELL", "wget -qO- http://localhost:8080/api/health || exit 1"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 60s
