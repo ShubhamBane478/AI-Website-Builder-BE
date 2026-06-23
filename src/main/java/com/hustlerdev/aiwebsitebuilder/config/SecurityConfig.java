@@ -22,8 +22,14 @@ public class SecurityConfig {
 
             // Define which endpoints are public vs protected
             .authorizeHttpRequests(auth -> auth
-                .requestMatchers("/api/health", "/api/v1/auth/**").permitAll()  // public
-                .anyRequest().authenticated()                                    // everything else needs a token
+                .requestMatchers(
+                    "/api/health",
+                    "/api/v1/auth/**",
+                    "/swagger-ui/**",
+                    "/swagger-ui.html",
+                    "/v3/api-docs/**"
+                ).permitAll()
+                .anyRequest().authenticated()
             )
 
             // No sessions — JWT is stateless, each request carries its own token
