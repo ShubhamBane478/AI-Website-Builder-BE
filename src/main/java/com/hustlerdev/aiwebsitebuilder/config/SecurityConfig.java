@@ -2,6 +2,7 @@ package com.hustlerdev.aiwebsitebuilder.config;
 
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.security.config.Customizer;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.config.annotation.web.configurers.AbstractHttpConfigurer;
@@ -17,6 +18,10 @@ public class SecurityConfig {
     @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
         http
+            // Wire CORS filter before authorization so preflight OPTIONS requests
+            // pass through without requiring a token (uses CorsConfigurationSource bean)
+            .cors(Customizer.withDefaults())
+
             // Disable CSRF — not needed for stateless REST APIs using JWT
             .csrf(AbstractHttpConfigurer::disable)
 
